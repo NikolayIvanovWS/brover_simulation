@@ -76,6 +76,19 @@ source install/setup.bash
 ros2 launch brover_e5_description gazebo.launch.py
 ```
 
+По умолчанию запускается пустой мир `empty`. Можно выбрать другой мир через аргумент `world`:
+
+```bash
+ros2 launch brover_e5_description gazebo.launch.py world:=test_yard
+ros2 launch brover_e5_description gazebo.launch.py world:=rough_terrain
+```
+
+Доступные миры:
+
+- `empty` - базовая плоскость для быстрой проверки модели и топиков;
+- `test_yard` - тестовый полигон со стенами и препятствиями для проверки лидара и камеры;
+- `rough_terrain` - простой неровный участок с рампами, ступенью и камнями для проверки движения.
+
 ## Управление ровером
 
 В отдельном терминале:
@@ -131,7 +144,7 @@ ros2 topic echo /front_camera/camera_info --once
 - `launch/rviz.launch.py` - просмотр модели в RViz;
 - `rviz/brover_e5.rviz` - конфигурация RViz;
 - `config/bridge.yaml` - мост Gazebo <-> ROS 2;
-- `worlds/brover_e5_empty.sdf` - простой мир Gazebo;
+- `worlds/` - миры Gazebo для разных сценариев;
 - `meshes/` - облегченные mesh-файлы колес, подвески, дифференциала и камеры.
 
 ## Примечания

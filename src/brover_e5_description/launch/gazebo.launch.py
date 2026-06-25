@@ -1,7 +1,13 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import (
+    Command,
+    FindExecutable,
+    LaunchConfiguration,
+    PathJoinSubstitution,
+    PythonExpression,
+)
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -9,12 +15,17 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     package_name = "brover_e5_description"
     model_name = LaunchConfiguration("model_name")
+    world_name = LaunchConfiguration("world")
 
     xacro_file = PathJoinSubstitution(
         [FindPackageShare(package_name), "urdf", "brover_e5.urdf.xacro"]
     )
     world_file = PathJoinSubstitution(
-        [FindPackageShare(package_name), "worlds", "brover_e5_empty.sdf"]
+        [
+            FindPackageShare(package_name),
+            "worlds",
+            PythonExpression(["'brover_e5_' + '", world_name, "' + '.sdf'"]),
+        ]
     )
     bridge_config = PathJoinSubstitution(
         [FindPackageShare(package_name), "config", "bridge.yaml"]
@@ -79,6 +90,12 @@ def generate_launch_description():
                 "model_name",
                 default_value="brover_e5",
                 description="Name of the robot entity spawned in Gazebo.",
+            ),
+            DeclareLaunchArgument(
+                "world",
+                default_value="empty",
+                choices=["empty", "test_yard", "rough_terrain"],
+                description="World to load: empty, test_yard, or rough_terrain.",
             ),
             gazebo,
             robot_state_publisher,
