@@ -67,6 +67,12 @@ Launch-файл запускает:
 
 В этом режиме топики Gazebo-сенсоров (`/scan`, `/front_camera/image`, `/odom`) не публикуются, потому что сама симуляция не запущена. Для проверки сенсоров используйте запуск Gazebo.
 
+Если RViz используется одновременно с запущенной симуляцией Gazebo для просмотра `/scan`, `/odom` или камеры, запускайте его с симуляционным временем:
+
+```bash
+ros2 launch brover_e5_description rviz.launch.py use_sim_time:=true
+```
+
 ## Запуск симуляции
 
 ```bash
@@ -126,6 +132,12 @@ ros2 topic echo /odom
 
 ```bash
 ros2 topic echo /scan
+```
+
+В сообщениях `/scan` frame должен быть `lidar_link`. Если RViz не показывает LaserScan, проверьте TF:
+
+```bash
+ros2 run tf2_ros tf2_echo base_footprint lidar_link
 ```
 
 Камера:
