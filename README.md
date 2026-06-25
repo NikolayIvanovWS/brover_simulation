@@ -1,12 +1,13 @@
 # brover_gazebo
 
-ROS 2 Jazzy пакет с упрощенной моделью ровера BRover-E5 для Gazebo Sim.
+ROS 2 Jazzy пакет с упрощенной моделью ровера BRover-E5 для Gazebo Sim и RViz.
 
 Модель предназначена для быстрого запуска симуляции, проверки управления через ROS 2 и получения базовых данных с виртуальных сенсоров. Внешний вид упрощен: корпус сделан прямоугольником, а колеса, подвеска, дифференциал и передняя камера основаны на облегченных mesh-файлах.
 
 ## Возможности
 
 - запуск BRover-E5 в Gazebo Sim;
+- просмотр модели в RViz без запуска Gazebo;
 - управление через `/cmd_vel`;
 - публикация одометрии в `/odom`;
 - TF и симуляционное время `/clock`;
@@ -27,8 +28,10 @@ ROS 2 Jazzy пакет с упрощенной моделью ровера BRove
 sudo apt update
 sudo apt install \
   python3-colcon-common-extensions \
-  ros-jazzy-ros-gz \
+  ros-jazzy-joint-state-publisher \
   ros-jazzy-robot-state-publisher \
+  ros-jazzy-ros-gz \
+  ros-jazzy-rviz2 \
   ros-jazzy-xacro
 ```
 
@@ -44,6 +47,25 @@ source install/setup.bash
 ```
 
 Если проект находится в VMware Shared Folder (`/mnt/hgfs/...`), не используйте `--symlink-install`: такие папки часто не поддерживают символические ссылки.
+
+## Просмотр модели в RViz
+
+RViz можно запустить без Gazebo. Этот режим удобен, чтобы быстро проверить внешний вид URDF-модели, TF-дерево и расположение визуальных элементов.
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+ros2 launch brover_e5_description rviz.launch.py
+```
+
+Launch-файл запускает:
+
+- `joint_state_publisher`;
+- `robot_state_publisher`;
+- `rviz2` с готовой конфигурацией `brover_e5.rviz`.
+
+В этом режиме топики Gazebo-сенсоров (`/scan`, `/front_camera/image`, `/odom`) не публикуются, потому что сама симуляция не запущена. Для проверки сенсоров используйте запуск Gazebo.
 
 ## Запуск симуляции
 
@@ -106,6 +128,8 @@ ros2 topic echo /front_camera/camera_info --once
 
 - `urdf/brover_e5.urdf.xacro` - описание модели;
 - `launch/gazebo.launch.py` - запуск Gazebo Sim, спавн модели и bridge;
+- `launch/rviz.launch.py` - просмотр модели в RViz;
+- `rviz/brover_e5.rviz` - конфигурация RViz;
 - `config/bridge.yaml` - мост Gazebo <-> ROS 2;
 - `worlds/brover_e5_empty.sdf` - простой мир Gazebo;
 - `meshes/` - облегченные mesh-файлы колес, подвески, дифференциала и камеры.

@@ -4,7 +4,7 @@ project(brover_e5_description)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config launch meshes urdf worlds
+  DIRECTORY config launch meshes rviz urdf worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
