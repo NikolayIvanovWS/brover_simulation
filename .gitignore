@@ -1,0 +1,25 @@
+# ROS / colcon build artifacts
+build/
+install/
+log/
+
+# Local CAD references used during model preparation
+references/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Temporary mesh experiments
+*.raw.stl
+*.low.stl
+_test-*.stl
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/

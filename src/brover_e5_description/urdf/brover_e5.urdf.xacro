@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<robot name="brover_e5" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg
+    name="mesh_dir"
+    default="package://brover_e5_description/meshes"/>
+
+  <material name="body_grey">
+    <color rgba="0.55 0.55 0.52 1.0"/>
+  </material>
+  <material name="metal_dark">
+    <color rgba="0.16 0.16 0.15 1.0"/>
+  </material>
+  <material name="wheel_black">
+    <color rgba="0.02 0.02 0.02 1.0"/>
+  </material>
+  <material name="sensor_dark">
+    <color rgba="0.03 0.035 0.04 1.0"/>
+  </material>
+
+  <!-- CAD assembly bounding box, converted from mm to m:
+       x: 0.036983..0.576981, y: -0.137456..0.353926, z: 0.086943..0.344930. -->
+  <xacro:property name="cad_center_x" value="0.30698204040527345"/>
+  <xacro:property name="cad_center_y" value="0.10823530578613282"/>
+  <xacro:property name="cad_min_z" value="0.08694290924072266"/>
+
+  <xacro:property name="base_z" value="0.14"/>
+  <xacro:property name="body_length" value="0.405"/>
+  <xacro:property name="body_width" value="0.265"/>
+  <xacro:property name="body_height" value="0.105"/>
+
+  <xacro:property name="wheel_radius" value="0.060"/>
+  <xacro:property name="wheel_width" value="0.065"/>
+  <xacro:property name="wheel_y" value="0.2132"/>
+  <xacro:property name="wheel_separation" value="0.4264"/>
+  <xacro:property name="wheel_z" value="-0.080"/>
+  <xacro:property name="front_wheel_x" value="0.210"/>
+  <xacro:property name="middle_wheel_x" value="0.0"/>
+  <xacro:property name="rear_wheel_x" value="-0.210"/>
+
+  <material name="mat_collision">
+    <color rgba="0.05 0.05 0.05 0.0"/>
+  </material>
+
+  <xacro:macro name="box_inertial" params="mass x y z">
+    <inertial>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${mass * (y*y + z*z) / 12.0}" ixy="0" ixz="0"
+        iyy="${mass * (x*x + z*z) / 12.0}" iyz="0"
+        izz="${mass * (x*x + y*y) / 12.0}"/>
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="wheel_inertial" params="mass radius width">
+    <inertial>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${mass * (3.0 * radius * radius + width * width) / 12.0}" ixy="0" ixz="0"
+        iyy="${mass * radius * radius / 2.0}" iyz="0"
+        izz="${mass * (3.0 * radius * radius + width * width) / 12.0}"/>
+    </inertial>
+  </xacro:macro>
+
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${base_z}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <visual name="body_visual">
+      <origin xyz="0.005 0 0.035" rpy="0 0 0"/>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+      <material name="body_grey"/>
+    </visual>
+    <visual name="differential_cad_visual">
+      <origin
+        xyz="-${cad_center_x} -${cad_center_y} ${-base_z - cad_min_z}"
+        rpy="0 0 0"/>
+      <geometry>
+        <mesh
+          filename="$(arg mesh_dir)/Rover-E5-differential.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="metal_dark"/>
+    </visual>
+    <visual name="suspension_cad_visual">
+      <origin
+        xyz="-${cad_center_x} -${cad_center_y} ${-base_z - cad_min_z}"
+        rpy="0 0 0"/>
+      <geometry>
+        <mesh
+          filename="$(arg mesh_dir)/Rover-E5-suspension.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="metal_dark"/>
+    </visual>
+    <visual name="lidar_base_visual">
+      <origin xyz="0.102 0 0.118" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.096 0.070 0.012"/>
+      </geometry>
+      <material name="sensor_dark"/>
+    </visual>
+    <visual name="lidar_post_front_left_visual">
+      <origin xyz="0.14056 0.028 0.108" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0032" length="0.041"/>
+      </geometry>
+      <material name="metal_dark"/>
+    </visual>
+    <visual name="lidar_post_front_right_visual">
+      <origin xyz="0.14056 -0.028 0.108" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0032" length="0.041"/>
+      </geometry>
+      <material name="metal_dark"/>
+    </visual>
+    <visual name="lidar_post_rear_left_visual">
+      <origin xyz="0.07056 0.020 0.108" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0032" length="0.041"/>
+      </geometry>
+      <material name="metal_dark"/>
+    </visual>
+    <visual name="lidar_post_rear_right_visual">
+      <origin xyz="0.07056 -0.020 0.108" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0032" length="0.041"/>
+      </geometry>
+      <material name="metal_dark"/>
+    </visual>
+    <visual name="lidar_lower_body_visual">
+      <origin xyz="0.113 0 0.130" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.018"/>
+      </geometry>
+      <material name="sensor_dark"/>
+    </visual>
+    <visual name="lidar_upper_body_visual">
+      <origin xyz="0.113 0 0.149" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.025"/>
+      </geometry>
+      <material name="sensor_dark"/>
+    </visual>
+    <visual name="lidar_front_notch_visual">
+      <origin xyz="0.069 0 0.132" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.020 0.018"/>
+      </geometry>
+      <material name="sensor_dark"/>
+    </visual>
+    <visual name="front_camera_cad_visual">
+      <origin
+        xyz="-0.306432 -0.103998 ${-base_z - cad_min_z}"
+        rpy="0 0 0"/>
+      <geometry>
+        <mesh
+          filename="$(arg mesh_dir)/Rover-E5-front-camera.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="sensor_dark"/>
+    </visual>
+    <collision name="body_collision">
+      <origin xyz="0.005 0 0.035" rpy="0 0 0"/>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+    </collision>
+    <xacro:box_inertial mass="8.0" x="${body_length}" y="${body_width}" z="${body_height}"/>
+  </link>
+
+  <link name="lidar_link"/>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.113 0 0.149" rpy="0 0 0"/>
+  </joint>
+
+  <link name="front_camera_link"/>
+  <joint name="front_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_camera_link"/>
+    <origin xyz="0.213 0 0.057" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:macro name="drive_wheel" params="name mesh_name x y_pos">
+    <link name="${name}_wheel_link">
+      <visual name="${name}_wheel_visual">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh
+            filename="$(arg mesh_dir)/${mesh_name}"
+            scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="wheel_black"/>
+      </visual>
+      <collision name="${name}_wheel_collision">
+        <origin xyz="0 0 0" rpy="1.5707963267948966 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <xacro:wheel_inertial mass="0.7" radius="${wheel_radius}" width="${wheel_width}"/>
+    </link>
+
+    <joint name="${name}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}_wheel_link"/>
+      <origin xyz="${x} ${y_pos} ${wheel_z}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.02" friction="0.01"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:drive_wheel
+    name="front_left" mesh_name="Rover-E5-front-left-wheel.stl"
+    x="${front_wheel_x}" y_pos="${wheel_y}"/>
+  <xacro:drive_wheel
+    name="middle_left" mesh_name="Rover-E5-middle-left-wheel.stl"
+    x="${middle_wheel_x}" y_pos="${wheel_y}"/>
+  <xacro:drive_wheel
+    name="rear_left" mesh_name="Rover-E5-rear-left-wheel.stl"
+    x="${rear_wheel_x}" y_pos="${wheel_y}"/>
+  <xacro:drive_wheel
+    name="front_right" mesh_name="Rover-E5-front-right-wheel.stl"
+    x="${front_wheel_x}" y_pos="-${wheel_y}"/>
+  <xacro:drive_wheel
+    name="middle_right" mesh_name="Rover-E5-middle-right-wheel.stl"
+    x="${middle_wheel_x}" y_pos="-${wheel_y}"/>
+  <xacro:drive_wheel
+    name="rear_right" mesh_name="Rover-E5-rear-right-wheel.stl"
+    x="${rear_wheel_x}" y_pos="-${wheel_y}"/>
+
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>front_left_wheel_joint</left_joint>
+      <left_joint>middle_left_wheel_joint</left_joint>
+      <left_joint>rear_left_wheel_joint</left_joint>
+      <right_joint>front_right_wheel_joint</right_joint>
+      <right_joint>middle_right_wheel_joint</right_joint>
+      <right_joint>rear_right_wheel_joint</right_joint>
+      <wheel_separation>${wheel_separation}</wheel_separation>
+      <wheel_radius>${wheel_radius}</wheel_radius>
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <max_linear_velocity>1.0</max_linear_velocity>
+      <max_angular_velocity>2.0</max_angular_velocity>
+      <max_linear_acceleration>1.5</max_linear_acceleration>
+      <max_angular_acceleration>3.0</max_angular_acceleration>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <topic>/scan</topic>
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="front_camera_link">
+    <sensor name="front_camera" type="camera">
+      <topic>/front_camera/image</topic>
+      <camera_info_topic>/front_camera/camera_info</camera_info_topic>
+      <update_rate>15</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>30.0</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
+</robot>
