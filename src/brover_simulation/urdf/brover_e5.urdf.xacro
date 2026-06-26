@@ -2,7 +2,7 @@
 <robot name="brover_e5" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg
     name="mesh_dir"
-    default="package://brover_e5_description/meshes"/>
+    default="package://brover_simulation/meshes"/>
 
   <material name="body_grey">
     <color rgba="0.55 0.55 0.52 1.0"/>

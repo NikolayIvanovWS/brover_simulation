@@ -6,7 +6,7 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    package_name = "brover_e5_description"
+    package_name = "brover_simulation"
     use_sim_time = LaunchConfiguration("use_sim_time")
 
     xacro_file = PathJoinSubstitution(

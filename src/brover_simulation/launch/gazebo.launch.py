@@ -13,7 +13,7 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    package_name = "brover_e5_description"
+    package_name = "brover_simulation"
     model_name = LaunchConfiguration("model_name")
     world_name = LaunchConfiguration("world")
 
@@ -94,8 +94,18 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "world",
                 default_value="empty",
-                choices=["empty", "test_yard", "rough_terrain"],
-                description="World to load: empty, test_yard, or rough_terrain.",
+                choices=[
+                    "empty",
+                    "test_yard",
+                    "rough_terrain",
+                    "indoor_corridor",
+                    "sensor_test_world",
+                    "obstacle_course",
+                ],
+                description=(
+                    "World to load: empty, test_yard, rough_terrain, "
+                    "indoor_corridor, sensor_test_world, or obstacle_course."
+                ),
             ),
             gazebo,
             robot_state_publisher,

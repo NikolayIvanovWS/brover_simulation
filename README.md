@@ -1,4 +1,4 @@
-# brover_gazebo
+# brover_simulation
 
 ROS 2 Jazzy пакет с упрощенной моделью ровера BRover-E5 для Gazebo Sim и RViz.
 
@@ -38,8 +38,8 @@ sudo apt install \
 ## Сборка
 
 ```bash
-git clone https://github.com/NikolayIvanovWS/brover-gazebo.git
-cd brover-gazebo
+git clone https://github.com/NikolayIvanovWS/brover_simulation.git
+cd brover_simulation
 
 source /opt/ros/jazzy/setup.bash
 colcon build
@@ -56,7 +56,7 @@ RViz можно запустить без Gazebo. Этот режим удобе
 source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 
-ros2 launch brover_e5_description rviz.launch.py
+ros2 launch brover_simulation rviz.launch.py
 ```
 
 Launch-файл запускает:
@@ -70,7 +70,7 @@ Launch-файл запускает:
 Если RViz используется одновременно с запущенной симуляцией Gazebo для просмотра `/scan`, `/odom` или камеры, запускайте его с симуляционным временем:
 
 ```bash
-ros2 launch brover_e5_description rviz.launch.py use_sim_time:=true
+ros2 launch brover_simulation rviz.launch.py use_sim_time:=true
 ```
 
 ## Запуск симуляции
@@ -79,21 +79,27 @@ ros2 launch brover_e5_description rviz.launch.py use_sim_time:=true
 source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 
-ros2 launch brover_e5_description gazebo.launch.py
+ros2 launch brover_simulation gazebo.launch.py
 ```
 
 По умолчанию запускается пустой мир `empty`. Можно выбрать другой мир через аргумент `world`:
 
 ```bash
-ros2 launch brover_e5_description gazebo.launch.py world:=test_yard
-ros2 launch brover_e5_description gazebo.launch.py world:=rough_terrain
+ros2 launch brover_simulation gazebo.launch.py world:=test_yard
+ros2 launch brover_simulation gazebo.launch.py world:=rough_terrain
+ros2 launch brover_simulation gazebo.launch.py world:=indoor_corridor
+ros2 launch brover_simulation gazebo.launch.py world:=sensor_test_world
+ros2 launch brover_simulation gazebo.launch.py world:=obstacle_course
 ```
 
 Доступные миры:
 
 - `empty` - базовая плоскость для быстрой проверки модели и топиков;
 - `test_yard` - тестовый полигон со стенами и препятствиями для проверки лидара и камеры;
-- `rough_terrain` - простой неровный участок с рампами, ступенью и камнями для проверки движения.
+- `rough_terrain` - простой неровный участок с рампами, ступенью и камнями для проверки движения;
+- `indoor_corridor` - коридорная среда со стенами и поворотами для проверки лидара в ограниченном пространстве;
+- `sensor_test_world` - стенд с панелями и объектами на известных расстояниях для проверки `/scan` и камеры;
+- `obstacle_course` - полоса препятствий со стойками, воротами, ступенью и рампой для ручного управления.
 
 ## Управление ровером
 
@@ -149,7 +155,7 @@ ros2 topic echo /front_camera/camera_info --once
 
 ## Состав пакета
 
-Основной ROS 2 пакет находится в `src/brover_e5_description`.
+Основной ROS 2 пакет находится в `src/brover_simulation`.
 
 - `urdf/brover_e5.urdf.xacro` - описание модели;
 - `launch/gazebo.launch.py` - запуск Gazebo Sim, спавн модели и bridge;

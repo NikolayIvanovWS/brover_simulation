@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>brover_e5_description</name>
+  <name>brover_simulation</name>
   <version>0.1.0</version>
-  <description>Simple BRover-E5 description and Gazebo Sim launch files.</description>
+  <description>Simple BRover-E5 simulation package for Gazebo Sim and RViz.</description>
   <maintainer email="nikolay@example.com">nikolay</maintainer>
   <license>MIT</license>
 
