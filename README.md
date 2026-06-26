@@ -186,6 +186,8 @@ ros2 topic echo /scan
 ros2 run tf2_ros tf2_echo base_footprint lidar_link
 ```
 
+В текущей настройке лидара `ranges[0]` направлен вперед по ходу ровера.
+
 Камера:
 
 ```bash

@@ -31,7 +31,7 @@
   <xacro:property name="wheel_radius" value="0.060"/>
   <xacro:property name="wheel_width" value="0.065"/>
   <xacro:property name="wheel_y" value="0.2132"/>
-  <xacro:property name="wheel_separation" value="0.58"/>
+  <xacro:property name="wheel_separation" value="0.572"/>
   <xacro:property name="wheel_z" value="-0.080"/>
   <xacro:property name="front_wheel_x" value="0.210"/>
   <xacro:property name="middle_wheel_x" value="0.0"/>
@@ -179,7 +179,7 @@
   <joint name="lidar_joint" type="fixed">
     <parent link="base_link"/>
     <child link="lidar_link"/>
-    <origin xyz="0.113 0 0.149" rpy="0 0 0"/>
+    <origin xyz="0.113 0 0.149" rpy="0 0 3.141592653589793"/>
   </joint>
 
   <link name="front_camera_link"/>
