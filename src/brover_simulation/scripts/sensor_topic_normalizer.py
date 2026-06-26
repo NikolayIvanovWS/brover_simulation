@@ -21,13 +21,13 @@ class SensorTopicNormalizer(Node):
 
         self.scan_subscription = self.create_subscription(
             LaserScan,
-            "/scan_raw",
+            "/_brover_simulation/scan",
             self.scan_callback,
             10,
         )
         self.image_subscription = self.create_subscription(
             Image,
-            "/front_camera/image_raw",
+            "/_brover_simulation/front_camera/image",
             self.image_callback,
             10,
         )

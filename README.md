@@ -93,6 +93,7 @@ ros2 launch brover_simulation gazebo.launch.py world:=rough_terrain
 ros2 launch brover_simulation gazebo.launch.py world:=indoor_corridor
 ros2 launch brover_simulation gazebo.launch.py world:=sensor_test_world
 ros2 launch brover_simulation gazebo.launch.py world:=obstacle_course
+ros2 launch brover_simulation gazebo.launch.py world:=calibration_world
 ```
 
 Доступные миры:
@@ -102,7 +103,8 @@ ros2 launch brover_simulation gazebo.launch.py world:=obstacle_course
 - `rough_terrain` - простой неровный участок с рампами, ступенью и камнями для проверки движения;
 - `indoor_corridor` - коридорная среда со стенами и поворотами для проверки лидара в ограниченном пространстве;
 - `sensor_test_world` - стенд с панелями и объектами на известных расстояниях для проверки `/scan` и камеры;
-- `obstacle_course` - полоса препятствий со стойками, воротами, ступенью и рампой для ручного управления.
+- `obstacle_course` - полоса препятствий со стойками, воротами, ступенью и рампой для ручного управления;
+- `calibration_world` - калибровочный мир с метровой линейкой по оси X и угловыми лучами 45, 90, 135, 180, -45, -90 и -135 градусов. Зеленая ось показывает движение вперед, оранжевая - назад, синие лучи - положительные углы, красные - отрицательные.
 
 ## Управление ровером
 
@@ -191,7 +193,7 @@ ros2 topic hz /front_camera/image
 ros2 topic echo /front_camera/camera_info --once
 ```
 
-Топики `/scan`, `/front_camera/image` и `/front_camera/camera_info` публикуются вспомогательным node `sensor_topic_normalizer.py`. Он получает raw-данные из Gazebo, задает корректные `frame_id` и оставляет пользовательские имена топиков стабильными.
+Топики `/scan`, `/front_camera/image` и `/front_camera/camera_info` публикуются вспомогательным node `sensor_topic_normalizer.py`. Он получает внутренние данные сенсоров из Gazebo, задает корректные `frame_id` и оставляет пользовательские имена топиков стабильными.
 
 ## Состав пакета
 
