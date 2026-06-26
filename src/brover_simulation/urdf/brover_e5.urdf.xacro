@@ -262,7 +262,6 @@
 
   <gazebo reference="lidar_link">
     <sensor name="lidar" type="gpu_lidar">
-      <gz_frame_id>lidar_link</gz_frame_id>
       <topic>/scan</topic>
       <update_rate>10</update_rate>
       <always_on>true</always_on>
@@ -292,9 +291,7 @@
 
   <gazebo reference="front_camera_link">
     <sensor name="front_camera" type="camera">
-      <gz_frame_id>front_camera_link</gz_frame_id>
       <topic>/front_camera/image</topic>
-      <camera_info_topic>/front_camera/camera_info</camera_info_topic>
       <update_rate>15</update_rate>
       <always_on>true</always_on>
       <visualize>true</visualize>

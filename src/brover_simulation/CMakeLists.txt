@@ -12,6 +12,7 @@ install(
   PROGRAMS
     scripts/keyboard_teleop.py
     scripts/odom_pose2d_publisher.py
+    scripts/sensor_topic_normalizer.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

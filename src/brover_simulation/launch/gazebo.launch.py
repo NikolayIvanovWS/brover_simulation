@@ -91,6 +91,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    sensor_topic_normalizer = Node(
+        package=package_name,
+        executable="sensor_topic_normalizer.py",
+        name="sensor_topic_normalizer",
+        output="screen",
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -119,5 +126,6 @@ def generate_launch_description():
             spawn_robot,
             bridge,
             odom_pose2d_publisher,
+            sensor_topic_normalizer,
         ]
     )

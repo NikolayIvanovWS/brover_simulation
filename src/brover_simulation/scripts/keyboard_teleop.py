@@ -3,6 +3,7 @@
 import select
 import sys
 import termios
+import time
 import tty
 
 import rclpy
@@ -14,8 +15,8 @@ HELP_TEXT = """
 Keyboard control for BRover-E5
 
 Moving:
-  w / s : forward / backward
-  a / d : turn left / turn right
+  hold w / s : forward / backward
+  hold a / d : turn left / turn right
   x     : stop
 
 Speed:
@@ -34,9 +35,15 @@ class KeyboardTeleop(Node):
         self.angular_speed = 0.8
         self.linear = 0.0
         self.angular = 0.0
-        self.timer = self.create_timer(0.1, self.publish_twist)
+        self.last_motion_key_time = 0.0
+        self.motion_timeout_sec = 0.25
+        self.timer = self.create_timer(0.05, self.publish_twist)
 
     def publish_twist(self):
+        if time.monotonic() - self.last_motion_key_time > self.motion_timeout_sec:
+            self.linear = 0.0
+            self.angular = 0.0
+
         msg = Twist()
         msg.linear.x = self.linear
         msg.angular.z = self.angular
@@ -51,15 +58,19 @@ class KeyboardTeleop(Node):
         if key == "w":
             self.linear = self.linear_speed
             self.angular = 0.0
+            self.last_motion_key_time = time.monotonic()
         elif key == "s":
             self.linear = -self.linear_speed
             self.angular = 0.0
+            self.last_motion_key_time = time.monotonic()
         elif key == "a":
             self.linear = 0.0
             self.angular = self.angular_speed
+            self.last_motion_key_time = time.monotonic()
         elif key == "d":
             self.linear = 0.0
             self.angular = -self.angular_speed
+            self.last_motion_key_time = time.monotonic()
         elif key == "x" or key == " ":
             self.stop()
         elif key == "q":

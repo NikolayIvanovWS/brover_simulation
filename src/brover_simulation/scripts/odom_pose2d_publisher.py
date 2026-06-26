@@ -32,12 +32,13 @@ class OdomPose2DPublisher(Node):
         pose2d_msg = Pose2D()
         pose2d_msg.x = pose.position.x
         pose2d_msg.y = pose.position.y
-        pose2d_msg.theta = quaternion_to_yaw(
+        yaw_rad = quaternion_to_yaw(
             orientation.x,
             orientation.y,
             orientation.z,
             orientation.w,
         )
+        pose2d_msg.theta = math.degrees(yaw_rad)
 
         self.publisher.publish(pose2d_msg)
 
