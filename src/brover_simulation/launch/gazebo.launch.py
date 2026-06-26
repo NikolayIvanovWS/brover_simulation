@@ -84,6 +84,13 @@ def generate_launch_description():
         parameters=[{"config_file": bridge_config}],
     )
 
+    odom_pose2d_publisher = Node(
+        package=package_name,
+        executable="odom_pose2d_publisher.py",
+        name="odom_pose2d_publisher",
+        output="screen",
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -111,5 +118,6 @@ def generate_launch_description():
             robot_state_publisher,
             spawn_robot,
             bridge,
+            odom_pose2d_publisher,
         ]
     )

@@ -9,7 +9,9 @@ ROS 2 Jazzy пакет с упрощенной моделью ровера BRove
 - запуск BRover-E5 в Gazebo Sim;
 - просмотр модели в RViz без запуска Gazebo;
 - управление через `/cmd_vel`;
+- управление ровером с клавиатуры;
 - публикация одометрии в `/odom`;
+- публикация двумерной позы ровера в `/odom_pose2d`;
 - TF и симуляционное время `/clock`;
 - виртуальный лидар с топиком `/scan`;
 - виртуальная передняя камера с топиками `/front_camera/image` и `/front_camera/camera_info`;
@@ -29,6 +31,7 @@ sudo apt update
 sudo apt install \
   python3-colcon-common-extensions \
   ros-jazzy-joint-state-publisher \
+  ros-jazzy-rclpy \
   ros-jazzy-robot-state-publisher \
   ros-jazzy-ros-gz \
   ros-jazzy-rviz2 \
@@ -103,6 +106,31 @@ ros2 launch brover_simulation gazebo.launch.py world:=obstacle_course
 
 ## Управление ровером
 
+### Управление с клавиатуры
+
+В отдельном терминале:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+ros2 run brover_simulation keyboard_teleop.py
+```
+
+Клавиши управления:
+
+- `w` - движение вперед;
+- `s` - движение назад;
+- `a` - поворот влево;
+- `d` - поворот вправо;
+- `x` или `Space` - остановка;
+- `q` / `z` - увеличить / уменьшить линейную скорость;
+- `e` / `c` - увеличить / уменьшить угловую скорость.
+
+Терминал с `keyboard_teleop.py` должен быть активным, чтобы нажатия клавиш попадали в node.
+
+### Публикация команды вручную
+
 В отдельном терминале:
 
 ```bash
@@ -134,6 +162,14 @@ ros2 topic list
 ros2 topic echo /odom
 ```
 
+Двумерная поза ровера:
+
+```bash
+ros2 topic echo /odom_pose2d
+```
+
+Топик `/odom_pose2d` имеет тип `geometry_msgs/msg/Pose2D`: `x` и `y` задают положение ровера на плоскости, `theta` задает угол поворота вокруг вертикальной оси.
+
 Лидар:
 
 ```bash
@@ -162,6 +198,7 @@ ros2 topic echo /front_camera/camera_info --once
 - `launch/rviz.launch.py` - просмотр модели в RViz;
 - `rviz/brover_e5.rviz` - конфигурация RViz;
 - `config/bridge.yaml` - мост Gazebo <-> ROS 2;
+- `scripts/` - вспомогательные ROS 2 node-скрипты для `/odom_pose2d` и управления с клавиатуры;
 - `worlds/` - миры Gazebo для разных сценариев;
 - `meshes/` - облегченные mesh-файлы колес, подвески, дифференциала и камеры.
 
