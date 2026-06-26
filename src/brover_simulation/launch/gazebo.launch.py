@@ -116,11 +116,12 @@ def generate_launch_description():
                     "sensor_test_world",
                     "obstacle_course",
                     "calibration_world",
+                    "left_wall",
                 ],
                 description=(
                     "World to load: empty, test_yard, rough_terrain, "
                     "indoor_corridor, sensor_test_world, obstacle_course, "
-                    "or calibration_world."
+                    "calibration_world, or left_wall."
                 ),
             ),
             gazebo,

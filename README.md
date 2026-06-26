@@ -94,6 +94,7 @@ ros2 launch brover_simulation gazebo.launch.py world:=indoor_corridor
 ros2 launch brover_simulation gazebo.launch.py world:=sensor_test_world
 ros2 launch brover_simulation gazebo.launch.py world:=obstacle_course
 ros2 launch brover_simulation gazebo.launch.py world:=calibration_world
+ros2 launch brover_simulation gazebo.launch.py world:=left_wall
 ```
 
 Доступные миры:
@@ -104,7 +105,8 @@ ros2 launch brover_simulation gazebo.launch.py world:=calibration_world
 - `indoor_corridor` - коридорная среда со стенами и поворотами для проверки лидара в ограниченном пространстве;
 - `sensor_test_world` - стенд с панелями и объектами на известных расстояниях для проверки `/scan` и камеры;
 - `obstacle_course` - полоса препятствий со стойками, воротами, ступенью и рампой для ручного управления;
-- `calibration_world` - калибровочный мир с метровой линейкой по оси X и угловыми лучами 45, 90, 135, 180, -45, -90 и -135 градусов. Зеленая ось показывает движение вперед, оранжевая - назад, синие лучи - положительные углы, красные - отрицательные.
+- `calibration_world` - калибровочный мир с метровой линейкой по оси X и угловыми лучами 45, 90, 135, 180, -45, -90 и -135 градусов. Зеленая ось показывает движение вперед, оранжевая - назад, синие лучи - положительные углы, красные - отрицательные;
+- `left_wall` - мир с длинной стеной слева от ровера: длина 6 м, высота 1 м, центр стены на расстоянии 1.5 м по оси `+Y`.
 
 ## Управление ровером
 
