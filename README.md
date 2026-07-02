@@ -24,19 +24,14 @@ ROS 2 Jazzy пакет с упрощенной моделью ровера BRove
 - Gazebo Sim из пакетов `ros-jazzy-ros-gz`;
 - `colcon`.
 
-Установка зависимостей:
+## Полная инструкция по установке и запуску
 
-```bash
-sudo apt update
-sudo apt install \
-  python3-colcon-common-extensions \
-  ros-jazzy-joint-state-publisher \
-  ros-jazzy-rclpy \
-  ros-jazzy-robot-state-publisher \
-  ros-jazzy-ros-gz \
-  ros-jazzy-rviz2 \
-  ros-jazzy-xacro
-```
+Подробная инструкция по подготовке Ubuntu 24.04, установке зависимостей, сборке пакета и запуску симуляции находится в файлах:
+
+- `Инструкция по запуску brover_simulation.docx` - версия для Microsoft Word;
+- `Инструкция по запуску brover_simulation.odt` - версия в формате OpenDocument для Ubuntu/LibreOffice.
+
+В инструкции приведены разделы по установке ROS 2 Jazzy, настройке рабочего окружения, установке Gazebo Harmonic, установке пакета `brover_simulation` и запуску симуляции ровера.
 
 ## Сборка
 
@@ -44,21 +39,14 @@ sudo apt install \
 git clone https://github.com/NikolayIvanovWS/brover_simulation.git
 cd brover_simulation
 
-source /opt/ros/jazzy/setup.bash
 colcon build
-source install/setup.bash
 ```
-
-Если проект находится в VMware Shared Folder (`/mnt/hgfs/...`), не используйте `--symlink-install`: такие папки часто не поддерживают символические ссылки.
 
 ## Просмотр модели в RViz
 
 RViz можно запустить без Gazebo. Этот режим удобен, чтобы быстро проверить внешний вид URDF-модели, TF-дерево и расположение визуальных элементов.
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
 ros2 launch brover_simulation rviz.launch.py
 ```
 
@@ -68,7 +56,7 @@ Launch-файл запускает:
 - `robot_state_publisher`;
 - `rviz2` с готовой конфигурацией `brover_e5.rviz`.
 
-В этом режиме топики Gazebo-сенсоров (`/scan`, `/front_camera/image`, `/odom`) не публикуются, потому что сама симуляция не запущена. Для проверки сенсоров используйте запуск Gazebo.
+В этом режиме топики Gazebo-сенсоров (`/scan`, `/front_camera/image`, `/odom`) **не публикуются**, потому что сама симуляция не запущена. Для проверки сенсоров используйте запуск Gazebo.
 
 Если RViz используется одновременно с запущенной симуляцией Gazebo для просмотра `/scan`, `/odom` или камеры, запускайте его с симуляционным временем:
 
@@ -79,9 +67,6 @@ ros2 launch brover_simulation rviz.launch.py use_sim_time:=true
 ## Запуск симуляции
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
 ros2 launch brover_simulation gazebo.launch.py
 ```
 
@@ -115,9 +100,6 @@ ros2 launch brover_simulation gazebo.launch.py world:=left_wall
 В отдельном терминале:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
 ros2 run brover_simulation keyboard_teleop.py
 ```
 
@@ -134,25 +116,6 @@ ros2 run brover_simulation keyboard_teleop.py
 - `e` / `c` - увеличить / уменьшить угловую скорость.
 
 Терминал с `keyboard_teleop.py` должен быть активным, чтобы нажатия клавиш попадали в node.
-
-### Публикация команды вручную
-
-В отдельном терминале:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist \
-  "{linear: {x: 0.25}, angular: {z: 0.0}}" -r 10
-```
-
-Остановить ровер:
-
-```bash
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist \
-  "{linear: {x: 0.0}, angular: {z: 0.0}}" --once
-```
 
 ## Проверка топиков
 
@@ -182,12 +145,6 @@ ros2 topic echo /odom_pose2d
 ros2 topic echo /scan
 ```
 
-В сообщениях `/scan` frame должен быть `lidar_link`. Если RViz не показывает LaserScan, проверьте TF:
-
-```bash
-ros2 run tf2_ros tf2_echo base_footprint lidar_link
-```
-
 В текущей настройке лидара `ranges[0]` направлен вперед по ходу ровера.
 
 Камера:
@@ -211,7 +168,3 @@ ros2 topic echo /front_camera/camera_info --once
 - `scripts/` - вспомогательные ROS 2 node-скрипты для `/odom_pose2d`, сенсорных топиков и управления с клавиатуры;
 - `worlds/` - миры Gazebo для разных сценариев;
 - `meshes/` - облегченные mesh-файлы колес, подвески, дифференциала и камеры.
-
-## Примечания
-
-Модель специально облегчена для комфортной работы в виртуальной машине. Физика использует простые collision-формы, а визуальные mesh-файлы оптимизированы по количеству треугольников. Исходные CAD-файлы не требуются для запуска пакета.
