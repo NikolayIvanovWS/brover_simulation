@@ -158,8 +158,10 @@ ros2 topic echo /front_camera/camera_info --once
 
 ## Состав пакета
 
-Основной ROS 2 пакет находится в `src/brover_simulation`.
+Репозиторий является ROS 2 пакетом `brover_simulation`: `package.xml` и `CMakeLists.txt` находятся в корне проекта.
 
+- `package.xml` - описание ROS 2 пакета и зависимостей;
+- `CMakeLists.txt` - правила установки launch-файлов, URDF, миров, mesh-файлов и вспомогательных скриптов;
 - `urdf/brover_e5.urdf.xacro` - описание модели;
 - `launch/gazebo.launch.py` - запуск Gazebo Sim, спавн модели и bridge;
 - `launch/rviz.launch.py` - просмотр модели в RViz;

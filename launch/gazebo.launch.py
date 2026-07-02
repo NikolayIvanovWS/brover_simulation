@@ -1,6 +1,13 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import (
+    DeclareLaunchArgument,
+    EmitEvent,
+    ExecuteProcess,
+    LogInfo,
+    RegisterEventHandler,
+)
+from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -45,11 +52,19 @@ def generate_launch_description():
         "use_sim_time": True,
     }
 
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution([FindPackageShare("ros_gz_sim"), "launch", "gz_sim.launch.py"])
-        ),
-        launch_arguments={"gz_args": ["-r ", world_file]}.items(),
+    gazebo = ExecuteProcess(
+        cmd=[FindExecutable(name="gz"), "sim", "-r", world_file],
+        output="screen",
+    )
+
+    shutdown_on_gazebo_exit = RegisterEventHandler(
+        OnProcessExit(
+            target_action=gazebo,
+            on_exit=[
+                LogInfo(msg="Gazebo closed, shutting down brover_simulation launch."),
+                EmitEvent(event=Shutdown(reason="Gazebo closed")),
+            ],
+        )
     )
 
     robot_state_publisher = Node(
@@ -130,5 +145,6 @@ def generate_launch_description():
             bridge,
             odom_pose2d_publisher,
             sensor_topic_normalizer,
+            shutdown_on_gazebo_exit,
         ]
     )

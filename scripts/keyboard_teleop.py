@@ -110,10 +110,13 @@ def main(args=None):
             if key is not None:
                 node.handle_key(key)
             rclpy.spin_once(node, timeout_sec=0.0)
+    except KeyboardInterrupt:
+        pass
     finally:
         node.stop()
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
 
 
