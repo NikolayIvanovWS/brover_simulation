@@ -104,6 +104,7 @@ def generate_launch_description():
         executable="odom_pose2d_publisher.py",
         name="odom_pose2d_publisher",
         output="screen",
+        parameters=[{"use_sim_time": True}],
     )
 
     sensor_topic_normalizer = Node(
