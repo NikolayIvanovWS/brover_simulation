@@ -23,6 +23,7 @@ def generate_launch_description():
     package_name = "brover_simulation"
     model_name = LaunchConfiguration("model_name")
     world_name = LaunchConfiguration("world")
+    imu_rate = LaunchConfiguration("imu_rate")
 
     xacro_file = PathJoinSubstitution(
         [FindPackageShare(package_name), "urdf", "brover_e5.urdf.xacro"]
@@ -47,6 +48,8 @@ def generate_launch_description():
                 xacro_file,
                 " mesh_dir:=file://",
                 mesh_dir,
+                " imu_rate:=",
+                imu_rate,
             ]
         ),
         "use_sim_time": True,
@@ -99,6 +102,22 @@ def generate_launch_description():
         parameters=[{"config_file": bridge_config}],
     )
 
+    command_limiter = Node(
+        package=package_name,
+        executable="command_limiter.py",
+        name="command_limiter",
+        output="screen",
+        parameters=[
+            PathJoinSubstitution([FindPackageShare(package_name), "config", "control.yaml"]),
+            {"use_sim_time": True},
+        ],
+    )
+    shutdown_on_limiter_exit = RegisterEventHandler(
+        OnProcessExit(
+            target_action=command_limiter,
+            on_exit=[EmitEvent(event=Shutdown(reason="Command limiter exited"))],
+        )
+    )
     odom_pose2d_publisher = Node(
         package=package_name,
         executable="odom_pose2d_publisher.py",
@@ -122,6 +141,11 @@ def generate_launch_description():
                 description="Name of the robot entity spawned in Gazebo.",
             ),
             DeclareLaunchArgument(
+                "imu_rate",
+                default_value="100.0",
+                description="IMU update rate in simulation Hz (positive value)",
+            ),
+            DeclareLaunchArgument(
                 "world",
                 default_value="empty",
                 choices=[
@@ -140,6 +164,8 @@ def generate_launch_description():
                     "calibration_world, or left_wall."
                 ),
             ),
+            shutdown_on_limiter_exit,
+            command_limiter,
             gazebo,
             robot_state_publisher,
             spawn_robot,

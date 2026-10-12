@@ -5,7 +5,7 @@
   direction: GZ_TO_ROS
   qos_profile: CLOCK
 
-- ros_topic_name: "/cmd_vel"
+- ros_topic_name: "/_brover_simulation/cmd_vel"
   gz_topic_name: "/cmd_vel"
   ros_type_name: "geometry_msgs/msg/Twist"
   gz_type_name: "gz.msgs.Twist"
@@ -28,4 +28,10 @@
   gz_topic_name: "/front_camera/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/_brover_simulation/imu"
+  gz_topic_name: "/bhi360/imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
   direction: GZ_TO_ROS

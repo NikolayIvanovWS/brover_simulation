@@ -3,7 +3,7 @@
 import math
 
 import rclpy
-from sensor_msgs.msg import CameraInfo, Image, LaserScan
+from sensor_msgs.msg import CameraInfo, Image, Imu, LaserScan
 from rclpy.node import Node
 
 
@@ -32,7 +32,14 @@ class SensorTopicNormalizer(Node):
             10,
         )
 
+        self.imu_publisher = self.create_publisher(Imu, "/bhi360/imu", 10)
+        self.imu_subscription = self.create_subscription(
+            Imu, "/_brover_simulation/imu", self.imu_callback, 10)
         self.horizontal_fov = 1.047
+
+    def imu_callback(self, msg):
+        msg.header.frame_id = "imu_link"
+        self.imu_publisher.publish(msg)
 
     def scan_callback(self, msg):
         msg.header.frame_id = "lidar_link"
