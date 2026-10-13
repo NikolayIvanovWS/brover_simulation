@@ -1,4 +1,5 @@
 import math
+import os
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
@@ -130,6 +131,7 @@ def generate_launch_description():
         executable="command_limiter.py",
         name="command_limiter",
         output="screen",
+        additional_env={"BROVER_SIMULATION_LAUNCH_PID": str(os.getpid())},
         parameters=[
             PathJoinSubstitution([FindPackageShare(package_name), "config", "control.yaml"]),
             {"use_sim_time": True},

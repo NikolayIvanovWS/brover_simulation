@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Limit planar commands before Gazebo; stop stale streams using steady time."""
 import math
+import os
 import time
 import rclpy
 from geometry_msgs.msg import Twist
 from rosgraph_msgs.msg import Clock as ClockMessage
 from rclpy.clock import Clock, ClockType
 from rclpy.node import Node
+from rclpy.executors import ExternalShutdownException
 from rclpy.qos import qos_profile_sensor_data
 from rcl_interfaces.msg import ParameterDescriptor
 
@@ -52,6 +54,8 @@ def limit_command(v, w, p):
 
 class CommandLimiter(Node):
     def __init__(self):
+        self.launch_parent_pid = int(os.environ.get(
+            "BROVER_SIMULATION_LAUNCH_PID", os.getppid()))
         super().__init__('command_limiter')
         self.params = {}
         for name,value in DEFAULTS.items():
@@ -86,6 +90,11 @@ class CommandLimiter(Node):
         self.command_time = now
 
     def on_timer(self):
+        if os.getppid() != self.launch_parent_pid:
+            self.publish()
+            self.get_logger().warning("Launch parent exited; stopping command limiter")
+            self.context.try_shutdown()
+            return
         now = time.monotonic()
         if not self.clock_running(now):
             self.command_time = None
@@ -104,7 +113,7 @@ def main(args=None):
     node = CommandLimiter()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         if rclpy.ok():
