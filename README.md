@@ -15,7 +15,7 @@ ROS 2 Jazzy пакет с упрощенной моделью ровера BRove
 - TF и симуляционное время `/clock`;
 - виртуальная IMU с топиком `/bhi360/imu`;
 - виртуальный лидар с топиком `/scan`;
-- виртуальная передняя камера с топиками `/front_camera/image` и `/front_camera/camera_info`;
+- виртуальная передняя камера с raw/JPEG изображением и CameraInfo;
 - шестиколесная skid-steer схема на базе Gazebo Sim `DiffDrive`.
 
 ## Требования
@@ -57,7 +57,7 @@ Launch-файл запускает:
 - `robot_state_publisher`;
 - `rviz2` с готовой конфигурацией `brover_e5.rviz`.
 
-В этом режиме топики Gazebo-сенсоров (`/scan`, `/front_camera/image`, `/odom`) **не публикуются**, потому что сама симуляция не запущена. Для проверки сенсоров используйте запуск Gazebo.
+В этом режиме топики Gazebo-сенсоров (`/scan`, `/camera1/image_raw`, `/odom`) **не публикуются**, потому что сама симуляция не запущена. Для проверки сенсоров используйте запуск Gazebo.
 
 Если RViz используется одновременно с запущенной симуляцией Gazebo для просмотра `/scan`, `/odom` или камеры, запускайте его с симуляционным временем:
 
@@ -151,11 +151,11 @@ ros2 topic echo /scan
 Камера:
 
 ```bash
-ros2 topic hz /front_camera/image
-ros2 topic echo /front_camera/camera_info --once
+ros2 topic hz /camera1/image_raw
+ros2 topic echo /camera1/camera_info --once
 ```
 
-Топики `/scan`, `/front_camera/image` и `/front_camera/camera_info` публикуются вспомогательным node `sensor_topic_normalizer.py`. Он получает внутренние данные сенсоров из Gazebo, задает корректные `frame_id` и оставляет пользовательские имена топиков стабильными.
+Топики `/scan`, `/camera1/image_raw` и `/camera1/camera_info` публикуются вспомогательным node `sensor_topic_normalizer.py`. Он получает внутренние данные сенсоров из Gazebo, задает корректные `frame_id` и оставляет пользовательские имена топиков стабильными.
 
 ## Состав пакета
 
@@ -255,3 +255,38 @@ IMU публикует quaternion ориентации, угловую скор�
 Проверка данных:
 
     ros2 topic echo /bhi360/imu --once --no-daemon
+
+## Интерфейсы камеры
+
+| Топик | Тип | Назначение |
+| --- | --- | --- |
+| /camera1/image_raw | sensor_msgs/msg/Image | Изображение RGB |
+| /camera1/camera_info | sensor_msgs/msg/CameraInfo | Параметры виртуальной камеры |
+| /image_raw/compressed | sensor_msgs/msg/CompressedImage | JPEG |
+
+У raw, JPEG и CameraInfo одного кадра одинаковые stamp и frame_id.
+Система координат front_camera_optical_frame: X вправо, Y вниз, Z вперед.
+Она связана фиксированным TF с front_camera_link; положение физической камеры
+в модели не изменилось.
+
+По умолчанию: 640×480, 30 Гц времени симуляции, горизонтальный FOV 1.047 рад,
+JPEG quality 85. CameraInfo рассчитывается по фактическому размеру и тому же FOV.
+JPEG с потерями: пиксели после декодирования могут отличаться от raw.
+
+Параметры запуска:
+
+    ros2 launch brover_simulation gazebo.launch.py world:=sensor_test_world camera_rate:=15.0 jpeg_quality:=80
+
+Для уменьшения нагрузки:
+
+    ros2 launch brover_simulation gazebo.launch.py world:=sensor_test_world camera_width:=320 camera_height:=240 camera_rate:=10.0
+
+Доступны camera_width, camera_height, camera_rate, camera_horizontal_fov,
+jpeg_quality. Размер и частота должны быть положительными, FOV — между 0 и pi,
+JPEG quality — целое от 1 до 100. Частота приема по реальному времени зависит
+от скорости симуляции и нагрузки.
+
+Для JPEG используются cv_bridge и OpenCV. Зависимости рабочего пространства
+можно установить через rosdep из корня рабочего пространства:
+
+    rosdep install --from-paths src --ignore-src -r -y

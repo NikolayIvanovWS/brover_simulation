@@ -5,6 +5,10 @@
     default="package://brover_simulation/meshes"/>
 
   <xacro:arg name="imu_rate" default="100.0"/>
+  <xacro:arg name="camera_width" default="640"/>
+  <xacro:arg name="camera_height" default="480"/>
+  <xacro:arg name="camera_rate" default="30.0"/>
+  <xacro:arg name="camera_horizontal_fov" default="1.047"/>
 
   <link name="imu_link"/>
   <joint name="imu_joint" type="fixed">
@@ -207,6 +211,14 @@
     <origin xyz="0.213 0 0.057" rpy="0 0 0"/>
   </joint>
 
+  <!-- Optical axes: X right, Y down, Z forward. Sensor pose is unchanged. -->
+  <link name="front_camera_optical_frame"/>
+  <joint name="front_camera_optical_joint" type="fixed">
+    <parent link="front_camera_link"/>
+    <child link="front_camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+  </joint>
+
   <xacro:macro name="drive_wheel" params="name mesh_name x y_pos">
     <link name="${name}_wheel_link">
       <visual name="${name}_wheel_visual">
@@ -309,15 +321,15 @@
 
   <gazebo reference="front_camera_link">
     <sensor name="front_camera" type="camera">
-      <topic>/front_camera/image</topic>
-      <update_rate>15</update_rate>
+      <topic>/camera1/image_raw</topic>
+      <update_rate>$(arg camera_rate)</update_rate>
       <always_on>true</always_on>
       <visualize>true</visualize>
       <camera>
-        <horizontal_fov>1.047</horizontal_fov>
+        <horizontal_fov>$(arg camera_horizontal_fov)</horizontal_fov>
         <image>
-          <width>640</width>
-          <height>480</height>
+          <width>$(arg camera_width)</width>
+          <height>$(arg camera_height)</height>
           <format>R8G8B8</format>
         </image>
         <clip>

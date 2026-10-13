@@ -1,9 +1,11 @@
+import math
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     EmitEvent,
     ExecuteProcess,
     LogInfo,
+    OpaqueFunction,
     RegisterEventHandler,
 )
 from launch.event_handlers import OnProcessExit
@@ -16,7 +18,24 @@ from launch.substitutions import (
     PythonExpression,
 )
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
+
+
+def validate_camera_arguments(context):
+    for name in ("camera_width", "camera_height"):
+        if int(LaunchConfiguration(name).perform(context)) <= 0:
+            raise ValueError(name+" must be positive")
+    rate = float(LaunchConfiguration("camera_rate").perform(context))
+    fov = float(LaunchConfiguration("camera_horizontal_fov").perform(context))
+    quality = int(LaunchConfiguration("jpeg_quality").perform(context))
+    if not math.isfinite(rate) or rate <= 0:
+        raise ValueError("camera_rate must be positive and finite")
+    if not math.isfinite(fov) or not 0 < fov < math.pi:
+        raise ValueError("camera_horizontal_fov must be between 0 and pi")
+    if not 1 <= quality <= 100:
+        raise ValueError("jpeg_quality must be between 1 and 100")
+    return []
 
 
 def generate_launch_description():
@@ -41,7 +60,7 @@ def generate_launch_description():
     mesh_dir = PathJoinSubstitution([FindPackageShare(package_name), "meshes"])
 
     robot_description = {
-        "robot_description": Command(
+        "robot_description": ParameterValue(Command(
             [
                 FindExecutable(name="xacro"),
                 " ",
@@ -50,8 +69,12 @@ def generate_launch_description():
                 mesh_dir,
                 " imu_rate:=",
                 imu_rate,
+                " camera_width:=", LaunchConfiguration("camera_width"),
+                " camera_height:=", LaunchConfiguration("camera_height"),
+                " camera_rate:=", LaunchConfiguration("camera_rate"),
+                " camera_horizontal_fov:=", LaunchConfiguration("camera_horizontal_fov"),
             ]
-        ),
+        ), value_type=str),
         "use_sim_time": True,
     }
 
@@ -131,6 +154,12 @@ def generate_launch_description():
         executable="sensor_topic_normalizer.py",
         name="sensor_topic_normalizer",
         output="screen",
+        parameters=[{
+            "use_sim_time": True,
+            "camera_horizontal_fov": ParameterValue(
+                LaunchConfiguration("camera_horizontal_fov"), value_type=float),
+            "jpeg_quality": ParameterValue(LaunchConfiguration("jpeg_quality"), value_type=int),
+        }],
     )
 
     return LaunchDescription(
@@ -164,6 +193,17 @@ def generate_launch_description():
                     "calibration_world, or left_wall."
                 ),
             ),
+            *[
+                DeclareLaunchArgument(name, default_value=value, description=description)
+                for name, value, description in [
+                    ("camera_width", "640", "Camera image width in pixels"),
+                    ("camera_height", "480", "Camera image height in pixels"),
+                    ("camera_rate", "30.0", "Camera update rate in simulation Hz"),
+                    ("camera_horizontal_fov", "1.047", "Camera horizontal FOV in radians"),
+                    ("jpeg_quality", "85", "JPEG quality, 1..100"),
+                ]
+            ],
+            OpaqueFunction(function=validate_camera_arguments),
             shutdown_on_limiter_exit,
             command_limiter,
             gazebo,

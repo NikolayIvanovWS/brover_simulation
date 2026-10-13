@@ -24,8 +24,8 @@
   gz_type_name: "gz.msgs.LaserScan"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/_brover_simulation/front_camera/image"
-  gz_topic_name: "/front_camera/image"
+- ros_topic_name: "/_brover_simulation/camera1/image_raw"
+  gz_topic_name: "/camera1/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
